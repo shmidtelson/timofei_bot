@@ -28,7 +28,8 @@ class Running:
             self.weekday = self.now.weekday()
 
             hi = f'{self.now.hour}-{self.now.minute}'
-            if(self.validator and hi not in self.current_hi):
+
+            if(self.validator(hi)):
                 self.current_hi.append(hi)
                 self.current_hi = self.current_hi[-2:]
                 self.sendMessage(self.hi_and_messages(hi))
@@ -38,9 +39,13 @@ class Running:
             self.bot.sendMessage(chat_id=self.chat_id, text=message)
 
 
-    def validator(self):
-        if not self.isWeekend():
+    def validator(self, hi):
+        if self.isWeekend():
+            return False
+
+        if hi not in self.current_hi:
             return True
+
         return False
 
     def isWeekend(self):
@@ -50,7 +55,7 @@ class Running:
         if self.now_ymd in self.datesWork():
             return False
 
-        return self.weekday >= 6
+        return self.weekday >= 5
 
     def hi_and_messages(self, hi):
         if hi in ['9-45','11-45','13-45','15-45']:
