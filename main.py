@@ -26,7 +26,7 @@ class Running:
 
     def main(self):
         while True:
-            self.now = datetime.datetime.now()         
+            self.now = datetime.datetime.now()
             self.now_ymd = f'{self.now.year}-{self.twoDigits(self.now.month)}-{self.twoDigits(self.now.day)}'
             self.weekday = self.now.weekday()
 
@@ -60,10 +60,10 @@ class Running:
         return self.weekday >= 5
 
     def hi_and_messages(self, hi):
-        if hi in ['9-45','11-45','13-45','15-45']:
+        if hi in ['09-45','11-45','13-45','15-45']:
             return 'Проветривание через 15 минут'
 
-        if hi in ['10-00','12-00','14-00','16-00','12-39']:
+        if hi in ['10-00','12-00','14-00','16-00']:
             self.bot.sendDocument(chat_id=self.group_id, document=GenerateGif().main())
             return 'Проветривание! Всем покинуть помещение!'
 
