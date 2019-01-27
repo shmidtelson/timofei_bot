@@ -4,11 +4,14 @@ import datetime
 import configparser
 import os
 from random_gif import GenerateGif
+from holiday_checker_api import ParseHoliday
 
 class Running:
     bot_token = ''
     chat_id = ''
-    current_hi =[]
+    current_hi =[] # latest 3 minutes
+    current_parse_date = '' # YYYYMMDD
+    current_status_day = '' # 1/0 Holiday or no
 
     def __init__(self):
         self.script_dir = os.path.dirname(__file__)
@@ -27,11 +30,18 @@ class Running:
     def main(self):
         while True:
             self.now = datetime.datetime.now()
-            self.now_ymd = f'{self.now.year}-{self.twoDigits(self.now.month)}-{self.twoDigits(self.now.day)}'
+
+            month = self.twoDigits(self.now.month)
+            day = self.twoDigits(self.now.day)
+
+            self.currentDate(f'{self.now.year}{month}{day}')
+
+            self.now_ymd = f'{self.now.year}-{month}-{day}'
             self.weekday = self.now.weekday()
 
             hi = f'{self.twoDigits(self.now.hour)}-{self.twoDigits(self.now.minute)}'
-            if(self.validator(hi)):
+
+            if(self.current_status_day == '0'):
                 self.current_hi.append(hi)
                 self.current_hi = self.current_hi[-2:]
                 self.sendMessage(self.hi_and_messages(hi), self.group_id)
@@ -39,25 +49,6 @@ class Running:
     def sendMessage(self, message, chat_id):
         if message is not None:
             self.bot.sendMessage(chat_id=chat_id, text=message)
-
-
-    def validator(self, hi):
-        if self.isWeekend():
-            return False
-
-        if hi not in self.current_hi:
-            return True
-
-        return False
-
-    def isWeekend(self):
-        if self.now_ymd in self.datesHolidays():
-            return True
-
-        if self.now_ymd in self.datesWork():
-            return False
-
-        return self.weekday >= 5
 
     def hi_and_messages(self, hi):
         if hi in ['09-45','11-45','13-45','15-45']:
@@ -67,19 +58,11 @@ class Running:
             self.bot.sendDocument(chat_id=self.group_id, document=GenerateGif().main())
             return 'Проветривание! Всем покинуть помещение!'
 
-    def datesHolidays(self):
-        return [
-            '2018-12-24',
-            '2018-12-25',
-            '2018-12-31',
-            '2018-01-01',
-            '2019-01-07',
-            ]
-
-    def datesWork(self):
-        return [
-           '2018-12-22',
-           '2018-12-29']
+    def currentDate(self, date):
+        if(self.current_parse_date != date):
+            self.current_parse_date = date
+            c = ParseHoliday(self.current_parse_date)
+            self.current_status_day = c.result
 
     def twoDigits(self, integer):
         return '{:02d}'.format(integer)
