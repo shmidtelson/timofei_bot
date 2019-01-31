@@ -49,7 +49,7 @@ class Running:
 
             self.current_hi.append(hi)
             self.current_hi = self.current_hi[-2:]
-            self.sendMessage(self.hi_and_messages(hi), self.group_id)
+            self.hi_and_messages(hi)
 
     def sendMessage(self, message, chat_id):
         if message is not None:
@@ -57,11 +57,11 @@ class Running:
 
     def hi_and_messages(self, hi):
         if hi in ['09-45','11-45','13-45','15-45']:
-            return 'Проветривание через 15 минут'
+            self.sendMessage('Проветривание через 15 минут', self.group_id)
 
-        if hi in ['10-00','12-00','14-00','16-00']:
+        if hi in ['10-00', '12-00', '14-00', '16-00']:
             self.bot.sendDocument(chat_id=self.group_id, document=GenerateGif().main())
-            return 'Проветривание! Всем покинуть помещение!'
+            self.sendMessage('Проветривание! Всем покинуть помещение!', self.group_id)
 
     def currentDate(self, date):
         if(self.current_parse_date != date):
