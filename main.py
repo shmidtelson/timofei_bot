@@ -42,9 +42,10 @@ class Running:
             hi = f'{self.twoDigits(self.now.hour)}-{self.twoDigits(self.now.minute)}'
 
             if(self.current_status_day == '0'):
-                self.current_hi.append(hi)
-                self.current_hi = self.current_hi[-2:]
-                self.sendMessage(self.hi_and_messages(hi), self.group_id)
+                if(hi not in self.current_hi):
+                    self.current_hi.append(hi)
+                    self.current_hi = self.current_hi[-2:]
+                    self.sendMessage(self.hi_and_messages(hi), self.group_id)
 
     def sendMessage(self, message, chat_id):
         if message is not None:
